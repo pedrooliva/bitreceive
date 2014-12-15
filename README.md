@@ -10,6 +10,19 @@ What is it?
 A program to be called by bitcore's -walletnotify / -blocknotify to detect receiving transactions
 
 
+Usage
+====
+
+put
+
+```
+blocknotify=/path/bitreceive.native blocknotify /path/config_example %s
+walletnotify=/path/bitreceive.native walletnotify /path/config_example %s
+```
+
+on your coind configuration
+
+
 What do it solve?
 ===================
 
@@ -22,6 +35,7 @@ How it works?
 =================================
 Here is an example of config:
 
+```
 ( 
   (rpcip "127.0.0.1")
   (rpcport 9904)
@@ -33,6 +47,7 @@ Here is an example of config:
   (min_seconds_between_call 5)
   (output_pipe "/tmp/bitreceive.pipe")
 )
+```
 
 The basic idea is bitreceive uses "listsinceblock" to find ,unconfirmed/or small number of confirmed, transactions on -walletnotify, -blocknotify events.
 It keeps track of the latest block number that a transaction reaches the configurable "nconfirm".
@@ -49,7 +64,9 @@ after the new block, it won't be notified until the next -walletnotify/-blocknot
 
 here is an example of what you get from the name pipe on one readline:
 
+```
 {"last_included_block":"0f5d6c3b994760d90dec345fffe55aa3bf1cff03e4bb74db40b710e26e53b703","incoming":[{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":9900000,"confirmations":0},{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":9990000,"confirmations":1},{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":8000000,"confirmations":2},{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":9000000,"confirmations":2}]}
+```
 
 Since I set nconfirm = 2. So it will be the last time, the last 2 txs show up. So I should make a credit to a user in my database. For other txs, I can just update them on user display.
 
@@ -69,6 +86,7 @@ you are pretty much fucked as design.
 Sample code of the named pipe reader ?
 ======================================
 
+```
 #!/bin/bash
 
 while true
@@ -78,3 +96,4 @@ do
         # call db or curl to your web
     fi
 done
+```
