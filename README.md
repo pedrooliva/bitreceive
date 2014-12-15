@@ -104,11 +104,11 @@ Installation
 I do encourage to build from the scratch to avoid silly trojan and all those craps, although a binary was built on ubuntu 14.0.4.1 and released for demoing/testing purpose.
 
 Install opam
-
 http://opam.ocamlpro.com/
 
 after that
 
+```
 opam install oasis type_conv core core.syntax core_extended yojson netclient bitcoin bitcoin.ocamlnet
 make
-
+```
