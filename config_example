@@ -1,0 +1,10 @@
+( 
+  (rpcip "127.0.0.1")
+  (rpcport 9904)
+  (rpcuser "peer")
+  (rpcpassword "unity")
+  (nconfirm 2)
+  (state_file "/tmp/bitreceive.state")
+  (min_seconds_between_call 5)
+  (output_pipe "/tmp/bitreceive.pipe");
+)

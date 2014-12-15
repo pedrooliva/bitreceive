@@ -1,0 +1,13 @@
+OASISFormat: 0.4
+Name:        bitreceive
+Synopsis:    To be called by wallet/block notify
+Version:     0.01
+Authors:     Pedro Oliva
+License:     GPL
+Plugins:     META (0.4), DevFiles (0.4)
+
+Executable bitreceive
+  Path:			.
+  BuildTools:		ocamlbuild
+  MainIs:		bitreceive.ml
+  BuildDepends:         threads, type_conv, core, core.syntax, core_extended, yojson, netclient, bitcoin, bitcoin.ocamlnet

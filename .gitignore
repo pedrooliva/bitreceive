@@ -1,0 +1,8 @@
+*~
+.*
+_build/*
+setup*
+myocamlbuild.ml
+*.byte
+*.native
+_tags
