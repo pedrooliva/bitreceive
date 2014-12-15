@@ -47,7 +47,8 @@ let scan_and_notify config state =
   in
   let (min_safe_block_info, has_work, txs) = List.fold_left ~init:(None,false,[]) ~f:(fun acc tx -> 
       (*Yojson.Safe.pretty_to_channel stdout (`Assoc tx);*)
-      let (min_safe_block_info,has_work,tx_acc) = acc in
+
+      let (old_min_safe_block_info,old_has_work,tx_acc) = acc in
       match (List.Assoc.find tx "category") with
         Some (`String "receive") -> 
         begin match (List.Assoc.find tx "address", List.Assoc.find tx "amount", List.Assoc.find tx "confirmations") with
@@ -59,19 +60,19 @@ let scan_and_notify config state =
             ] :: tx_acc in
             let min_safe_block_info =
               if confirmations >= config.nconfirm then
-                begin match (List.Assoc.find tx "blockhash", min_safe_block_info) with
+                begin match (List.Assoc.find tx "blockhash", old_min_safe_block_info) with
                     (Some (`String blockhash), None) -> Some (confirmations, blockhash)
-                  | (Some (`String blockhash), Some (min_safe_block_nconfirm,min_safe_block)) -> 
-                    if min_safe_block_nconfirm > confirmations then
+                  | (Some (`String blockhash), Some (old_min_safe_block_nconfirm,_)) -> 
+                    if old_min_safe_block_nconfirm > confirmations then
                       Some (confirmations, blockhash)
                     else
-                      min_safe_block_info
+                      old_min_safe_block_info
                   | _ -> assert false
                 end
               else
-                min_safe_block_info
+                old_min_safe_block_info
             in
-              (min_safe_block_info, (has_work || confirmations < config.nconfirm), tx_acc)
+              (min_safe_block_info, (old_has_work || confirmations < config.nconfirm), tx_acc)
           | _ -> assert false
         end
       | _ -> acc
