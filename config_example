@@ -4,7 +4,8 @@
   (rpcuser "peer")
   (rpcpassword "unity")
   (nconfirm 2)
+  (mutex_file "/tmp/bitreceive.lock")
   (state_file "/tmp/bitreceive.state")
   (min_seconds_between_call 5)
-  (output_pipe "/tmp/bitreceive.pipe");
+  (output_pipe "/tmp/bitreceive.pipe")
 )
