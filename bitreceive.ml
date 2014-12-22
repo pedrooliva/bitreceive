@@ -51,12 +51,13 @@ let scan_and_notify config state =
       let (old_min_safe_block_info,old_has_work,tx_acc) = acc in
       match (List.Assoc.find tx "category") with
         Some (`String "receive") -> 
-        begin match (List.Assoc.find tx "address", List.Assoc.find tx "amount", List.Assoc.find tx "confirmations") with
-            (Some (`String address), Some (`Float amount), Some (`Int confirmations)) -> 
+        begin match (List.Assoc.find tx "address", List.Assoc.find tx "amount", List.Assoc.find tx "confirmations", List.Assoc.find tx "txid") with
+            (Some (`String address), Some (`Float amount), Some (`Int confirmations), Some (`String txid)) -> 
             let tx_acc = `Assoc [
               ("address", (`String address));
               ("amount", (`Intlit (Int64.to_string (Bitcoin.amount_of_float amount))));
-              ("confirmations", (`Int confirmations))
+              ("confirmations", (`Int confirmations));
+              ("txid", (`String txid))
             ] :: tx_acc in
             let min_safe_block_info =
               if confirmations >= config.nconfirm then
