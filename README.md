@@ -23,7 +23,7 @@ walletnotify=/path/bitreceive.native walletnotify /path/config_example %s
 on your coind configuration
 
 
-What do it solve?
+What does it solve?
 ===================
 
 -walletnotify and -blocknotify are a general purpose API to notify when Bitcore sees new blocks or transactions affecting wallet.
@@ -65,7 +65,7 @@ after the new block, it won't be notified until the next -walletnotify/-blocknot
 here is an example of what you get from the name pipe on one readline:
 
 ```
-{"last_included_block":"0f5d6c3b994760d90dec345fffe55aa3bf1cff03e4bb74db40b710e26e53b703","incoming":[{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":9900000,"confirmations":0},{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":9990000,"confirmations":1},{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":8000000,"confirmations":2},{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":9000000,"confirmations":2}]}
+{"last_included_block":"0f5d6c3b994760d90dec345fffe55aa3bf1cff03e4bb74db40b710e26e53b703","incoming":[{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":9900000,"confirmations":0,"txid":"364256da4b7384ee13ffd7494871e8ad879ce2e199daddb2a23b8d47dfba44d1"},{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":9990000,"confirmations":1,"txid":"06d8b19e9f4f377fde1ae4b85ded2a6bca89a7280f95905804476a814f58750c"},{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":8000000,"confirmations":2,"txid":"5558b19e9f4f377fde1ae4b85ded2a6bca89a7280f95905804476a814f58750e"},{"address":"n4J8FqLtP9sqg6Xy5Tpar8hk1WWjkxbuth","amount":9000000,"confirmations":2,"txid":"16dfe375482466fd7db777cdd1b2d591758aa769f065a3fc7fac37b1d174a5a3"}]}
 ```
 
 Since I set nconfirm = 2. So it will be the last time, the last 2 txs show up. So I should make a credit to a user in my database. For other txs, I can just update them on user display.
