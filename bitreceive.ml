@@ -109,7 +109,7 @@ let _ =
 
     begin
     if (Unix.time() -. state.last_called > (Float.of_int config.min_seconds_between_call)) then
-      scan_and_notify ~notified_txid:(Some txid) config conn state
+      scan_and_notify ~notified_txid:txid config conn state
     end;
 
     Unix.close mud
