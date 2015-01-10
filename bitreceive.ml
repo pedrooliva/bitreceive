@@ -36,17 +36,17 @@ let scan_and_notify ?(notified_txid) config conn state =
       None -> CoinService.listsinceblock ~conn ()
     | Some blockhash -> CoinService.listsinceblock ~conn ~blockhash ()
   in
-  let (is_notified_tx_receive,min_safe_block_info, has_work, txs) = List.fold_left ~init:(false,None,false,[]) ~f:(fun acc tx -> 
+  let (is_block_notify_or_is_notified_tx_receive,min_safe_block_info, has_work, txs) = List.fold_left ~init:(false,None,false,[]) ~f:(fun acc tx -> 
       (*Yojson.Safe.pretty_to_channel stdout (`Assoc tx);*)
 
-      let (is_notified_tx_receive,old_min_safe_block_info,old_has_work,tx_acc) = acc in
+      let (is_block_notify_or_is_notified_tx_receive,old_min_safe_block_info,old_has_work,tx_acc) = acc in
       match (List.Assoc.find tx "category") with
         Some (`String "receive") -> 
         begin match (List.Assoc.find tx "address", List.Assoc.find tx "amount", List.Assoc.find tx "confirmations", List.Assoc.find tx "txid") with
             (Some (`String address), Some (`Float amount), Some (`Int confirmations), Some (`String txid)) -> 
             let is_it () =
               match notified_txid with
-                None -> false
+                None -> true
               | Some notified_txid -> notified_txid = txid
             in
 
@@ -70,7 +70,7 @@ let scan_and_notify ?(notified_txid) config conn state =
               else
                 old_min_safe_block_info
             in
-              ((is_notified_tx_receive || is_it ()), min_safe_block_info, (old_has_work || confirmations < config.nconfirm), tx_acc)
+              ((is_block_notify_or_is_notified_tx_receive || is_it ()), min_safe_block_info, (old_has_work || confirmations < config.nconfirm), tx_acc)
           | _ -> assert false
         end
       | _ -> acc
@@ -82,7 +82,7 @@ let scan_and_notify ?(notified_txid) config conn state =
     | Some (_, blockhash) -> Some blockhash
   in
 
-  if is_notified_tx_receive then
+  if is_block_notify_or_is_notified_tx_receive then
     begin
       let json_string = Yojson.Safe.to_string (`Assoc [("last_included_block", `String (match last_included_block with None -> "" | Some bl -> bl));("incoming",`List txs)]) in
       Out_channel.write_all config.output_pipe ~data:(sprintf "%s\n" json_string);
