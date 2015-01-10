@@ -30,16 +30,13 @@ let get_state state_file =
 
 let save_state state_file state = Out_channel.write_all state_file ~data:(Sexp.to_string (sexp_of_state_t state))
 
-let scan_and_notify config state =
-  let conn =
-    {
-      Bitcoin.inet_addr = Unix.Inet_addr.of_string config.rpcip;
-      host = "localhost";
-      port = config.rpcport;
-      username = config.rpcuser;
-      password = config.rpcpassword
-    }
-  in
+let is_receive_tx conn txid =
+  let tx =  CoinService.gettransaction ~conn txid in
+  match (List.Assoc.find tx "category") with
+    Some (`String "receive") -> true
+  | _ -> false
+
+let scan_and_notify config conn state =
   let (txs,_) =
     match state.last_included_block with
       None -> CoinService.listsinceblock ~conn ()
@@ -90,16 +87,27 @@ let scan_and_notify config state =
   save_state config.state_file {last_included_block = last_included_block; has_work = has_work; last_called = Unix.time ()}
 
 let _ =
+  let get_conn config =
+    {
+      Bitcoin.inet_addr = Unix.Inet_addr.of_string config.rpcip;
+      host = "localhost";
+      port = config.rpcport;
+      username = config.rpcuser;
+      password = config.rpcpassword
+    }
+  in
   match Sys.argv with
     [|_;"walletnotify";config_file;txid|] -> 
     let config = config_t_of_sexp (Sexp.of_string (In_channel.read_all config_file)) in
     let mud = mutex config in
 
+    let conn = get_conn config in
     let state = get_state config.state_file in
 
     begin
     if (Unix.time() -. state.last_called > (Float.of_int config.min_seconds_between_call)) then
-      scan_and_notify config state
+      if is_receive_tx conn txid then
+        scan_and_notify config conn state
     end;
 
     Unix.close mud
@@ -107,10 +115,11 @@ let _ =
     let config = config_t_of_sexp (Sexp.of_string (In_channel.read_all config_file)) in
     let mud = mutex config in
 
+    let conn = get_conn config in
     let state = get_state config.state_file in
     begin
       if (Unix.time() -. state.last_called > (Float.of_int config.min_seconds_between_call) && state.has_work) then
-        scan_and_notify config state
+        scan_and_notify config conn state
     end;
 
     Unix.close mud
